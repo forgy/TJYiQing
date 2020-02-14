@@ -1,0 +1,230 @@
+﻿<!DOCTYPE HTML>
+<!DOCTYPE html PUBLIC "">
+<HTML lang="zh-cn">
+<HEAD>
+    <META content="IE=11.0000"
+          http-equiv="X-UA-Compatible">
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <META http-equiv="X-UA-Compatible" content="IE=edge">
+    <META name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <META name="renderer" content="webkit">
+    <TITLE>天津市新型冠状肺炎疫情防控图</TITLE>
+    <LINK href="img/favicon.ico" rel="shortcut icon">
+    <script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp&key=WXYBZ-36QCJ-KQQFU-KLVTX-QFSCE-Z5FZ7"></script>
+    <script src="https://cache.amap.com/lbs/static/es5.min.js"></script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=1447d3b3c3c4d1bef1c3a7b8557cb994&plugin=AMap.MarkerClusterer,AMap.Geocoder"></script>
+    <LINK href="css/map.css"
+          rel="stylesheet">
+    <LINK href="css/Font-Awesome/css/font-awesome.min.css" rel="stylesheet">
+    <SCRIPT src="js/jquery.js" type="text/javascript"></SCRIPT>
+    <!-- <SPAN>天津市勘察院技术支持giserpeng@163.com</SPAN></DIV>-->
+</HEAD>
+<BODY>
+<DIV id="titleBox">
+    <DIV id="time">统计时间截至：</DIV>
+    <DIV id="infoBox">
+        <DIV id="infoItem">
+            <DIV class="number"  id="numberQz" style="color: red;">0</DIV>
+            <DIV class="field">确诊</DIV>
+        </DIV>
+        <DIV id="infoItem">
+            <DIV class="number"  id="numberXz" style="color: orange;">0</DIV>
+            <DIV class="field">新增</DIV>
+        </DIV>
+        <DIV id="infoItem">
+            <DIV class="number"  id="numberCy" style="color: green;">0</DIV>
+            <DIV class="field">出院</DIV>
+        </DIV>
+        <DIV id="infoItem">
+            <DIV class="number" id="numberSw">0</DIV>
+            <DIV class="field">死亡</DIV>
+        </DIV>
+    </DIV>
+</DIV>
+<DIV id="mapDiv">
+    <DIV id="layer">
+        <DIV id="legendItem"><INPUT name="yq" id="checkbox1" onchange="ChangLayer(this)"
+                                    type="checkbox" checked="checked" value="0"><LABEL id="checklabel1" for="checkbox1">
+            <DIV id="labelicon1"></DIV>
+            确诊分布</LABEL></DIV>
+        <DIV id="legendItem"><INPUT name="yy" id="checkbox3" onchange="ChangLayer(this)"
+                                    type="checkbox"  value="2"><LABEL id="checklabel3" for="checkbox3">
+            <DIV id="labelicon3"></DIV>
+            医疗机构</LABEL></DIV>
+
+    </DIV>
+</DIV>
+<DIV id="logobox">
+    <DIV id="logo"></DIV>
+    <DIV id="nbname">天津市勘察院</DIV>
+</DIV>
+
+    <script>
+    var map;
+    var info;
+    var cluster, markers = [], markers2 = [], markers3 = [];
+    var geocoder;
+    $(function() {
+        init();
+        initData();
+    });
+    var init = function() {
+        map = new AMap.Map('mapDiv', {
+            resizeEnable: true, //是否监控地图容器尺寸变化
+            mapStyle: "amap://styles/grey"
+        });
+        geocoder = new AMap.Geocoder({
+            city: "022", //城市设为北京，默认：“全国”
+        });
+        getMapData();
+    }
+
+    function addListen(marker) {
+        marker.on('click', function(e) {
+            var info = [];
+            info.push("<div style=\"padding:0px 0px 0px 4px;font-size: 8pt\"><b>"+marker.extData.user_num+"</b></div>");
+            info.push("<div style=\"padding:0px 0px 0px 4px;font-size: 8pt\"><b>"+marker.extData.user_name+"</b></div>");
+            info.push("<div style=\"padding:0px 0px 0px 4px;font-size: 8pt\"><b>"+marker.extData.location+"</b></div>");
+            info.push("<div style=\"padding:0px 0px 0px 4px;font-size: 8pt\">"+marker.extData.other_info+"</div>");
+            infoWindow = new AMap.InfoWindow({
+                content: info.join("")  //使用默认信息窗体框样式，显示信息内容
+            });
+            infoWindow.open(map, e.lnglat);
+        });
+
+    }
+    function addHospitalListen(marker) {
+        marker.on('click', function(e) {
+            var info = [];
+            info.push("<div style=\"padding:0px 0px 0px 4px;font-size: 8pt\"><b>名称："+marker.extData.name+"</b></div>");
+            info.push("<div style=\"padding:0px 0px 0px 4px;font-size: 8pt\"><b>等级："+marker.extData.level+"</b></div>");
+            info.push("<div style=\"padding:0px 0px 0px 4px;font-size: 8pt\"><b>地址："+marker.extData.address+"</b></div>");
+            infoWindow = new AMap.InfoWindow({
+                content: info.join("")  //使用默认信息窗体框样式，显示信息内容
+            });
+            infoWindow.open(map, e.lnglat);
+        });
+
+    }
+
+    function initData() {
+        $.getJSON('https://api.inews.qq.com/newsqa/v1/query/pubished/daily/list?province=%E5%A4%A9%E6%B4%A5', function(data) {
+
+            document.getElementById("numberQz").innerHTML = data.data[data.data.length-1].confirm;
+            document.getElementById("numberXz").innerHTML = data.data[data.data.length-1].confirm_add;
+            document.getElementById("numberCy").innerHTML = data.data[data.data.length-1].heal;
+            document.getElementById("numberSw").innerHTML = data.data[data.data.length-1].dead;});
+    }
+
+
+    // 获取头部数据
+    function getMapData() {
+        $.getJSON('data/hospital.json', function(data) {
+            var infos=[];
+            var addresses=[];
+            for(var i = 0; i <data.length;i++ ){
+                if(data[i].address && data[i].address != null){
+                    addresses.push(data[i].address);
+                    infos.push(data[i]);
+                    if(addresses.length == 10){
+                        geocoder.getLocation(addresses, function(status, result) {
+                            if (status === 'complete'&&result.geocodes.length) {
+                                for(var i=0;i<result.geocodes.length;i+=1){
+                                    var  marker = new AMap.Marker({
+                                        icon: "img/yy2.png",
+                                        position: result.geocodes[i].location
+                                    });
+                                    marker.extData = infos[i];
+                                    addHospitalListen(marker);
+                                    markers3.push(marker);
+                                }
+                            }
+                        });
+                        addresses=[];
+                        infos=[];
+                    }
+                }
+            }
+
+        })
+
+        $.getJSON('data/qz.json', function(data) {
+                var addresses=[];
+                var infos=[];
+                for(var i = 0; i <data.length;i++ ){
+                    if(data[i].location && data[i].location != null) {
+                        addresses.push(data[i].location);
+                        infos.push(data[i]);
+                    }
+                    if(addresses.length == 10){
+                        addQz(addresses,infos);
+
+                        addresses=[];
+                        infos=[];
+                    }
+                }
+        })
+    }
+
+    function addQz(addresses,infos) {
+        geocoder.getLocation(addresses, function(status, result) {
+            if (status === 'complete'&&result.geocodes.length) {
+                for(var i=0;i<result.geocodes.length;i+=1){
+                    var sss = Math.random()/100;
+                    result.geocodes[i].location.lat+= sss;
+                    var  marker = new AMap.Marker({
+                        icon: "img/qz2.png",
+                        position: result.geocodes[i].location
+                    });
+                    marker.extData = infos[i];
+                    markers.push(marker);
+                    addListen(marker);
+                    // map.add(marker);
+                    // map.setFitView(markers3);
+                }
+            }
+            addCluster();
+        });
+    }
+
+    function addCluster() {
+       cluster = new AMap.MarkerClusterer(map, markers, {gridSize: 50});
+    }
+
+    function ChangLayer(obj) {
+        var layerName = obj.getAttribute('name');
+        if (layerName == 'yq'){
+            if (obj.checked){
+                for (i in markers) {
+                    map.add(markers[i]);
+                }
+            }else {
+                for (i in markers) {
+                    map.remove( markers[i]);
+                }
+            }
+        }else if(layerName == 'yy'){
+            if (obj.checked){
+                for (i in markers3) {
+                    map.add(markers3[i]);
+                }
+            }else {
+                for (i in markers3) {
+                    map.remove( markers3[i]);
+                }
+            }
+        }else if(layerName == 'xz'){
+            if (obj.checked){
+                for (i in markers2) {
+                    map.add(markers2[i]);
+                }
+            }else {
+                for (i in markers2) {
+                    map.remove( markers2[i]);
+                }
+            }
+        }
+    }
+</SCRIPT>
+</BODY>
+</HTML>

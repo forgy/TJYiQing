@@ -1,0 +1,75 @@
+body {
+	margin: 0px; padding: 0px; width: 100%; height: 100%;
+}
+html {
+	margin: 0px; padding: 0px; width: 100%; height: 100%;
+}
+#titleBox {
+	background: rgb(244, 244, 244); border-radius: 5px; left: 2%; top: 5px; width: 96%; height: 10%; position: absolute; z-index: 9999; opacity: 0.9; -moz-opacity: 0.9;
+}
+#time {
+	width: 98%; height: 22%; padding-left: 5px; font-size: 12px;
+}
+#infoBox {
+	width: 100%; height: 78%;
+}
+#infoItem {
+	width: 15%; height: 90%; margin-top: 5px; margin-left: 8%; float: left;
+}
+#infoItem .number {
+	height: 60%; text-align: center; font-size: 18px; font-weight: bold;
+}
+#infoItem .field {
+	height: 40%; text-align: center; font-size: 12px;
+}
+#mapDiv {
+	background: rgb(211, 234, 250); width: 100%; height: 100%;
+}
+#beianbox {
+	width: 140px; height: 20px; bottom: 0px; line-height: 20px; position: absolute; z-index: 9999;
+}
+#baname {
+	left: 0px; height: 20px; line-height: 20px; font-size: 10px; position: absolute;
+}
+#logobox {
+	border-radius: 5px; width: 100px; height: 20px; left: 10px; bottom: 2px; line-height: 20px; position: absolute; z-index: 9999; color:rgb(34, 34, 34);
+	background: white;
+	border-radius: 5px;
+	opacity: 0.9;
+}
+#logo {
+	background: url("../img/logo.jpg") no-repeat; left: 5px; top: 2px; width: 16px; height: 16px; line-height: 20px; position: absolute;
+}
+#nbname {
+	left: 22px; height: 20px; line-height: 20px; font-size: 12px; position: absolute;
+}
+#layer {
+	background: ghostwhite; border-radius: 3px; left: 10px; width: 100px; height: auto; bottom: 25px; position: absolute; z-index: 9999;
+}
+#legendItem {
+	height: 20px; line-height: 20px; font-size: 12px;
+}
+#checklabel1 {
+	left: 36px; height: 20px; bottom:20px; line-height: 20px; display: block; position: absolute;
+}
+#checklabel2 {
+	left: 36px; height: 20px; bottom: 20px; line-height: 20px; display: block; position: absolute;
+}
+#checklabel3 {
+	left: 36px; height: 20px; bottom: 0px; line-height: 20px; display: block; position: absolute;
+}
+#labelicon1 {
+	background: url("../img/qz2.png") no-repeat; left: -16px; top: 2px; width: 16px; height: 16px; position: absolute;
+}
+#labelicon2 {
+	background: url("../img/ys2.png") no-repeat; left: -16px; top: 2px; width: 16px; height: 16px; position: absolute;
+}
+#labelicon3 {
+	background: url("../img/yy2.png") no-repeat; left: -16px; top: 2px; width: 16px; height: 16px; position: absolute;
+}
+.info_window {
+	height: 15px; line-height: 15px; font-size: 10px;
+}
+.info_window_c {
+	font-size: 10px;
+}
